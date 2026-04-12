@@ -1,0 +1,204 @@
+package net.exylia.exyliaPearls.service;
+
+import net.exylia.commons.v2.debug.api.DebugAPI;
+import net.exylia.commons.v2.tasks.api.TaskAPI;
+import net.exylia.commons.v2.tasks.scheduler.ScheduledTask;
+import net.exylia.exyliaPearls.util.GlitchUtil;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
+
+public final class AntiGlitchService {
+
+    private static final double PEARL_DAMAGE = 5.0;
+
+    private final ConcurrentHashMap<UUID, PearlTracker> trackers = new ConcurrentHashMap<>();
+
+    public void startTracking(Player player, Projectile pearl) {
+        UUID uuid = player.getUniqueId();
+        PearlTracker existing = trackers.remove(uuid);
+        if (existing != null && existing.task != null) {
+            existing.task.cancel();
+        }
+
+        Location playerLoc = player.getLocation();
+        PearlTracker tracker = new PearlTracker(pearl, pearl.getLocation().clone(),
+                playerLoc.getYaw(), playerLoc.getPitch());
+        trackers.put(uuid, tracker);
+        tracker.task = TaskAPI.atTimer(pearl, () -> tick(uuid), 0L, 1L);
+    }
+
+    public void handlePearlLand(ProjectileHitEvent event) {
+        Projectile projectile = event.getEntity();
+        if (!(projectile.getShooter() instanceof Player player)) return;
+
+        UUID uuid = player.getUniqueId();
+        PearlTracker tracker = trackers.remove(uuid);
+        if (tracker != null && tracker.task != null) {
+            tracker.task.cancel();
+        }
+
+        Location lastSafe = tracker != null ? tracker.lastSafe.get() : null;
+        float yaw = tracker != null ? tracker.yaw : 0;
+        float pitch = tracker != null ? tracker.pitch : 0;
+
+        org.bukkit.entity.Entity hitEntity = event.getHitEntity();
+        if (hitEntity instanceof LivingEntity target && target != player) {
+            double speed = projectile.getVelocity().length();
+            target.damage(speed, player);
+        }
+
+        event.setCancelled(true);
+        projectile.remove();
+
+        Location pearlLoc = projectile.getLocation();
+        Block hitBlock = event.getHitBlock();
+        BlockFace hitFace = event.getHitBlockFace();
+
+        DebugAPI.logPluginDebug("[Pearl] Player: " + player.getName());
+        DebugAPI.logPluginDebug("[Pearl] Pearl landed at: " + formatLoc(pearlLoc));
+        DebugAPI.logPluginDebug("[Pearl] Hit block: " + hitBlock + ", Face: " + hitFace);
+        DebugAPI.logPluginDebug("[Pearl] LastSafe: " + (lastSafe != null ? formatLoc(lastSafe) : "null"));
+
+        if (hitFace == BlockFace.DOWN) {
+            DebugAPI.logPluginDebug("[Pearl] DOWN face detected - using lastSafe only");
+            final Location finalDest;
+            if (lastSafe != null) {
+                finalDest = lastSafe.clone();
+                finalDest.setYaw(yaw);
+                finalDest.setPitch(pitch);
+            } else {
+                finalDest = null;
+            }
+            TaskAPI.at(player, () -> {
+                if (finalDest != null) {
+                    DebugAPI.logPluginDebug("[Pearl] Teleporting to lastSafe: " + formatLoc(finalDest));
+                    player.teleportAsync(finalDest, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+                } else {
+                    DebugAPI.logPluginDebug("[Pearl] NO VALID DEST - NOT TELEPORTING!");
+                }
+                player.damage(PEARL_DAMAGE);
+            });
+            return;
+        }
+
+        Location dest = computeDest(pearlLoc, hitBlock, hitFace);
+        dest.setYaw(yaw);
+        dest.setPitch(pitch);
+        DebugAPI.logPluginDebug("[Pearl] Computed dest: " + formatLoc(dest));
+
+        Location fixed = GlitchUtil.fix(dest);
+        DebugAPI.logPluginDebug("[Pearl] Fixed dest: " + (fixed != null ? formatLoc(fixed) : "null"));
+
+        if (fixed == null && lastSafe != null) {
+            DebugAPI.logPluginDebug("[Pearl] Fixed dest was null, trying lastSafe...");
+            Location safeClone = lastSafe.clone();
+            safeClone.setYaw(yaw);
+            safeClone.setPitch(pitch);
+            fixed = GlitchUtil.fix(safeClone);
+            DebugAPI.logPluginDebug("[Pearl] Fixed lastSafe: " + (fixed != null ? formatLoc(fixed) : "null"));
+        }
+
+        final Location finalDest = fixed;
+        TaskAPI.at(player, () -> {
+            if (finalDest != null) {
+                DebugAPI.logPluginDebug("[Pearl] Teleporting to: " + formatLoc(finalDest));
+                player.teleportAsync(finalDest, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+            } else {
+                DebugAPI.logPluginDebug("[Pearl] NO VALID DEST - NOT TELEPORTING!");
+            }
+            player.damage(PEARL_DAMAGE);
+        });
+    }
+
+    private static String formatLoc(Location loc) {
+        if (loc == null) return "null";
+        return String.format("X:%.2f Y:%.2f Z:%.2f (Block: %d,%d,%d)",
+                loc.getX(), loc.getY(), loc.getZ(),
+                loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+    }
+
+    public void cleanup(UUID playerUUID) {
+        PearlTracker tracker = trackers.remove(playerUUID);
+        if (tracker != null && tracker.task != null) {
+            tracker.task.cancel();
+        }
+    }
+
+    private void tick(UUID playerUUID) {
+        PearlTracker tracker = trackers.get(playerUUID);
+        if (tracker == null) return;
+        if (!tracker.pearl.isValid()) {
+            cleanup(playerUUID);
+            return;
+        }
+        Location loc = tracker.pearl.getLocation();
+        if (loc.getBlock().isPassable()) {
+            tracker.lastSafe.set(loc.clone());
+        }
+    }
+
+    private static Location computeDest(Location pearlLoc, Block hitBlock, BlockFace hitFace) {
+        Location dest = pearlLoc.clone();
+        if (hitBlock == null || hitFace == null) return dest;
+
+        double blockX = hitBlock.getX() + 0.5;
+        double blockZ = hitBlock.getZ() + 0.5;
+        double blockY = hitBlock.getY();
+
+        switch (hitFace) {
+            case EAST  -> {
+                dest.setX(blockX + 1.0 + 0.3);
+                dest.setZ(blockZ);
+            }
+            case WEST  -> {
+                dest.setX(blockX - 1.0 - 0.3);
+                dest.setZ(blockZ);
+            }
+            case SOUTH -> {
+                dest.setZ(blockZ + 1.0 + 0.3);
+                dest.setX(blockX);
+            }
+            case NORTH -> {
+                dest.setZ(blockZ - 1.0 - 0.3);
+                dest.setX(blockX);
+            }
+            case UP -> {
+                dest.setY(blockY + 1.0);
+                dest.setX(blockX);
+                dest.setZ(blockZ);
+            }
+            case DOWN -> {
+                dest.setY(blockY);
+                dest.setX(blockX);
+                dest.setZ(blockZ);
+            }
+        }
+
+        return dest;
+    }
+
+    private static final class PearlTracker {
+        final Projectile pearl;
+        final AtomicReference<Location> lastSafe = new AtomicReference<>();
+        final float yaw;
+        final float pitch;
+        volatile ScheduledTask task;
+
+        PearlTracker(Projectile pearl, Location initialSafe, float yaw, float pitch) {
+            this.pearl = pearl;
+            this.lastSafe.set(initialSafe);
+            this.yaw = yaw;
+            this.pitch = pitch;
+        }
+    }
+}
