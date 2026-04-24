@@ -120,15 +120,8 @@ public final class GlitchUtil {
         }
 
         if (!feet.isPassable()) {
-            double blockTop = feet.getY() + 1.0;
-            if (loc.getY() < blockTop) {
-                DebugAPI.logPluginDebug("[Step] Block NOT passable, moving to block top (Y=" + String.format("%.2f", blockTop) + ")");
-                loc.setY(blockTop);
-                return FixResult.MODIFIED;
-            }
-            DebugAPI.logPluginDebug("[Step] Block NOT passable but already above it, lowering Y");
-            loc.setY(loc.getY() - 0.5);
-            return FixResult.MODIFIED;
+            DebugAPI.logPluginDebug("[Step] Block NOT passable, cancelling");
+            return FixResult.CANCEL;
         }
 
         Block below = feet.getRelative(BlockFace.DOWN);

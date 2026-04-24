@@ -30,9 +30,7 @@ public final class AntiGlitchService {
             existing.task.cancel();
         }
 
-        Location playerLoc = player.getLocation();
-        PearlTracker tracker = new PearlTracker(pearl, pearl.getLocation().clone(),
-                playerLoc.getYaw(), playerLoc.getPitch());
+        PearlTracker tracker = new PearlTracker(pearl, pearl.getLocation().clone());
         trackers.put(uuid, tracker);
         tracker.task = TaskAPI.atTimer(pearl, () -> tick(uuid), 0L, 1L);
     }
@@ -48,8 +46,6 @@ public final class AntiGlitchService {
         }
 
         Location lastSafe = tracker != null ? tracker.lastSafe.get() : null;
-        float yaw = tracker != null ? tracker.yaw : 0;
-        float pitch = tracker != null ? tracker.pitch : 0;
 
         org.bukkit.entity.Entity hitEntity = event.getHitEntity();
         if (hitEntity instanceof LivingEntity target && target != player) {
@@ -74,8 +70,6 @@ public final class AntiGlitchService {
             final Location finalDest;
             if (lastSafe != null) {
                 finalDest = lastSafe.clone();
-                finalDest.setYaw(yaw);
-                finalDest.setPitch(pitch);
             } else {
                 finalDest = null;
             }
@@ -92,8 +86,6 @@ public final class AntiGlitchService {
         }
 
         Location dest = computeDest(pearlLoc, hitBlock, hitFace);
-        dest.setYaw(yaw);
-        dest.setPitch(pitch);
         DebugAPI.logPluginDebug("[Pearl] Computed dest: " + formatLoc(dest));
 
         Location fixed = GlitchUtil.fix(dest);
@@ -101,10 +93,7 @@ public final class AntiGlitchService {
 
         if (fixed == null && lastSafe != null) {
             DebugAPI.logPluginDebug("[Pearl] Fixed dest was null, trying lastSafe...");
-            Location safeClone = lastSafe.clone();
-            safeClone.setYaw(yaw);
-            safeClone.setPitch(pitch);
-            fixed = GlitchUtil.fix(safeClone);
+            fixed = GlitchUtil.fix(lastSafe.clone());
             DebugAPI.logPluginDebug("[Pearl] Fixed lastSafe: " + (fixed != null ? formatLoc(fixed) : "null"));
         }
 
@@ -190,15 +179,11 @@ public final class AntiGlitchService {
     private static final class PearlTracker {
         final Projectile pearl;
         final AtomicReference<Location> lastSafe = new AtomicReference<>();
-        final float yaw;
-        final float pitch;
         volatile ScheduledTask task;
 
-        PearlTracker(Projectile pearl, Location initialSafe, float yaw, float pitch) {
+        PearlTracker(Projectile pearl, Location initialSafe) {
             this.pearl = pearl;
             this.lastSafe.set(initialSafe);
-            this.yaw = yaw;
-            this.pitch = pitch;
         }
     }
 }
