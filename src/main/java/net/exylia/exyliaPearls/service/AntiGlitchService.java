@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.util.Vector;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -65,6 +66,19 @@ public final class AntiGlitchService {
         DebugAPI.logPluginDebug("[Pearl] Hit block: " + hitBlock + ", Face: " + hitFace);
         DebugAPI.logPluginDebug("[Pearl] LastSafe: " + (lastSafe != null ? formatLoc(lastSafe) : "null"));
 
+        if (hitBlock == null) {
+            DebugAPI.logPluginDebug("[Pearl] No hit block (entity/expiry) - teleporting to pearl location");
+            final Location entityDest = pearlLoc.clone();
+            TaskAPI.at(player, () -> {
+                Location playerLoc = player.getLocation();
+                entityDest.setYaw(playerLoc.getYaw());
+                entityDest.setPitch(playerLoc.getPitch());
+                teleportWithVelocity(player, entityDest);
+                player.damage(PEARL_DAMAGE);
+            });
+            return;
+        }
+
         if (hitFace == BlockFace.DOWN) {
             DebugAPI.logPluginDebug("[Pearl] DOWN face detected - using lastSafe only");
             final Location finalDest;
@@ -75,8 +89,11 @@ public final class AntiGlitchService {
             }
             TaskAPI.at(player, () -> {
                 if (finalDest != null) {
+                    Location playerLoc = player.getLocation();
+                    finalDest.setYaw(playerLoc.getYaw());
+                    finalDest.setPitch(playerLoc.getPitch());
                     DebugAPI.logPluginDebug("[Pearl] Teleporting to lastSafe: " + formatLoc(finalDest));
-                    player.teleportAsync(finalDest, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+                    teleportWithVelocity(player, finalDest);
                 } else {
                     DebugAPI.logPluginDebug("[Pearl] NO VALID DEST - NOT TELEPORTING!");
                 }
@@ -100,8 +117,11 @@ public final class AntiGlitchService {
         final Location finalDest = fixed;
         TaskAPI.at(player, () -> {
             if (finalDest != null) {
+                Location playerLoc = player.getLocation();
+                finalDest.setYaw(playerLoc.getYaw());
+                finalDest.setPitch(playerLoc.getPitch());
                 DebugAPI.logPluginDebug("[Pearl] Teleporting to: " + formatLoc(finalDest));
-                player.teleportAsync(finalDest, PlayerTeleportEvent.TeleportCause.ENDER_PEARL);
+                teleportWithVelocity(player, finalDest);
             } else {
                 DebugAPI.logPluginDebug("[Pearl] NO VALID DEST - NOT TELEPORTING!");
             }
@@ -131,7 +151,8 @@ public final class AntiGlitchService {
             return;
         }
         Location loc = tracker.pearl.getLocation();
-        if (loc.getBlock().isPassable()) {
+        Block block = loc.getBlock();
+        if (block.isPassable() && block.getRelative(BlockFace.UP).isPassable()) {
             tracker.lastSafe.set(loc.clone());
         }
     }
@@ -140,40 +161,28 @@ public final class AntiGlitchService {
         Location dest = pearlLoc.clone();
         if (hitBlock == null || hitFace == null) return dest;
 
-        double blockX = hitBlock.getX() + 0.5;
-        double blockZ = hitBlock.getZ() + 0.5;
-        double blockY = hitBlock.getY();
+        double bx = hitBlock.getX();
+        double bz = hitBlock.getZ();
+        double by = hitBlock.getY();
 
         switch (hitFace) {
-            case EAST  -> {
-                dest.setX(blockX + 1.0 + 0.3);
-                dest.setZ(blockZ);
-            }
-            case WEST  -> {
-                dest.setX(blockX - 1.0 - 0.3);
-                dest.setZ(blockZ);
-            }
-            case SOUTH -> {
-                dest.setZ(blockZ + 1.0 + 0.3);
-                dest.setX(blockX);
-            }
-            case NORTH -> {
-                dest.setZ(blockZ - 1.0 - 0.3);
-                dest.setX(blockX);
-            }
-            case UP -> {
-                dest.setY(blockY + 1.0);
-                dest.setX(blockX);
-                dest.setZ(blockZ);
-            }
-            case DOWN -> {
-                dest.setY(blockY);
-                dest.setX(blockX);
-                dest.setZ(blockZ);
-            }
+            case EAST  -> { dest.setX(bx + 1.6); dest.setZ(bz + 0.5); }
+            case WEST  -> { dest.setX(bx - 0.6); dest.setZ(bz + 0.5); }
+            case SOUTH -> { dest.setZ(bz + 1.6); dest.setX(bx + 0.5); }
+            case NORTH -> { dest.setZ(bz - 0.6); dest.setX(bx + 0.5); }
+            case UP    -> { dest.setY(by + 1.0); dest.setX(bx + 0.5); dest.setZ(bz + 0.5); }
+            case DOWN  -> { dest.setY(by - 0.1); dest.setX(bx + 0.5); dest.setZ(bz + 0.5); }
         }
 
         return dest;
+    }
+
+    private static void teleportWithVelocity(Player player, Location dest) {
+        Vector velocity = player.getVelocity();
+        player.teleportAsync(dest, PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
+                .thenAccept(success -> {
+                    if (success) TaskAPI.at(player, () -> player.setVelocity(velocity));
+                });
     }
 
     private static final class PearlTracker {

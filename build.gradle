@@ -10,7 +10,9 @@ plugins {
 def pluginName = 'ExyliaPearls'
 def mainPackage = 'net.exylia'
 def fullPackage = "${mainPackage}.exyliaPearls"
-def outputDirectory = "C:\\Seafile\\plugins\\loaders\\"
+def outputDirectory = System.getProperty("os.name").toLowerCase().contains("windows")
+        ? "C:/Seafile/plugins/loaders"
+        : "/home/diground/Seafile/plugins/loaders"
 
 group = mainPackage
 version = '1.0.0'
@@ -85,7 +87,7 @@ tasks.register('buildAll') {
     doLast {
         exec {
             workingDir project.rootDir
-            commandLine 'cmd', '/c', 'gradlew.bat', 'assembleLoaderJar'
+            commandLine System.getProperty("os.name").toLowerCase().contains("windows") ? ['cmd', '/c', 'gradlew.bat', 'assembleLoaderJar'] : ['./gradlew', 'assembleLoaderJar']
         }
     }
 }

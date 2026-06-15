@@ -135,6 +135,19 @@ public final class GlitchUtil {
                 loc.setY(fenceTop);
                 return FixResult.MODIFIED;
             }
+            return clearanceCheck(loc);
+        }
+
+        if (below.isPassable()) {
+            DebugAPI.logPluginDebug("[Step] Floating above air - preserving Y for natural fall");
+            return FixResult.OK;
+        }
+
+        double groundSurface = below.getY() + 1.0;
+        if (loc.getY() > groundSurface) {
+            DebugAPI.logPluginDebug("[Step] Above ground surface, snapping to Y=" + String.format("%.4f", groundSurface));
+            loc.setY(groundSurface);
+            return FixResult.MODIFIED;
         }
 
         DebugAPI.logPluginDebug("[Step] Passable block, checking clearance");
@@ -169,25 +182,12 @@ public final class GlitchUtil {
 
     private static FixResult clearanceCheck(Location loc) {
         Block feet = loc.getBlock();
-        Block head = feet.getRelative(BlockFace.UP);
-
-        boolean feetPass = feet.isPassable();
-        boolean headPass = head.isPassable();
-
-        DebugAPI.logPluginDebug("[ClearanceCheck] Y: " + feet.getType() + " (passable=" + feetPass + ")");
-        DebugAPI.logPluginDebug("[ClearanceCheck] Y+1: " + head.getType() + " (passable=" + headPass + ")");
-
-        if (!feetPass) {
+        DebugAPI.logPluginDebug("[ClearanceCheck] Feet: " + feet.getType() + " (passable=" + feet.isPassable() + ")");
+        if (!feet.isPassable()) {
             DebugAPI.logPluginDebug("[ClearanceCheck] BLOCKED! Feet not passable");
             return FixResult.CANCEL;
         }
-
-        if (!headPass) {
-            DebugAPI.logPluginDebug("[ClearanceCheck] Head blocked but feet ok, allowing (tight space)");
-            return FixResult.OK;
-        }
-
-        DebugAPI.logPluginDebug("[ClearanceCheck] ALL CLEAR!");
+        DebugAPI.logPluginDebug("[ClearanceCheck] OK!");
         return FixResult.OK;
     }
 
