@@ -1,6 +1,7 @@
 package net.exylia.exyliaPearls.listener;
 
 import net.exylia.commons.v2.tasks.api.TaskAPI;
+import net.exylia.exyliaPearls.config.ConfigDefaults;
 import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.DebugService;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
@@ -43,6 +44,8 @@ public final class ProjectileLaunchListener implements Listener {
         final double halfWidth = PearlTrackerService.halfWidthOf(player);
         final double height = PearlTrackerService.heightOf(player);
 
+        final int interval = ConfigDefaults.checkTickInterval();
+
         // scheduled on the pearl, so it dies together with the entity
         TaskAPI.atTimer(pearl, () -> {
             final Location current = pearl.getLocation();
@@ -51,6 +54,6 @@ public final class ProjectileLaunchListener implements Listener {
             if (BoundingBoxUtils.isSafe(current, halfWidth, height, debugService.viewers())) {
                 tracker.put(pearlId, new PearlData(origin, current.clone()));
             }
-        }, () -> tracker.invalidate(pearlId), 1L, 1L);
+        }, () -> tracker.invalidate(pearlId), interval, interval);
     }
 }

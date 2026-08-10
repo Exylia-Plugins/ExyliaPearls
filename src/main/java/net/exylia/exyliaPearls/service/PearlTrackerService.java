@@ -1,7 +1,7 @@
 package net.exylia.exyliaPearls.service;
 
+import net.exylia.exyliaPearls.config.ConfigDefaults;
 import net.exylia.exyliaPearls.model.PearlData;
-import net.exylia.exyliaPearls.util.BoundingBoxUtils;
 import org.bukkit.entity.Player;
 
 import java.util.Map;
@@ -42,9 +42,9 @@ public final class PearlTrackerService {
     }
 
     /**
-     * The player's height scaled down to the ratio used for collision checks.
+     * The player's height scaled by the configured {@link net.exylia.exyliaPearls.model.CheckMode}.
      */
     public static double heightOf(Player player) {
-        return player.getHeight() * BoundingBoxUtils.HEIGHT_RATIO;
+        return player.getHeight() * ConfigDefaults.mode().getMultiplier();
     }
 }

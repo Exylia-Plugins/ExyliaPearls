@@ -19,12 +19,6 @@ import java.util.List;
  */
 public final class BoundingBoxUtils {
 
-    /**
-     * Height ratio applied to the player bounding box during collision checks.
-     * Matches the swimming/crawling height, which is what PearlFix uses by default.
-     */
-    public static final double HEIGHT_RATIO = (0.6 / 1.8);
-
     private BoundingBoxUtils() {
     }
 
