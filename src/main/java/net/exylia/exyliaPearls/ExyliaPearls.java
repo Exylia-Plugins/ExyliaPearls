@@ -1,32 +1,37 @@
 package net.exylia.exyliaPearls;
 
-import net.exylia.commons.v2.loader.ExyliaLoaderPlugin;
+import net.exylia.commons.v2.config.schema.ConfigSchemaRegistry;
 import net.exylia.commons.v2.debug.api.DebugAPI;
-import net.exylia.commons.v2.tasks.api.TaskAPI;
-import net.exylia.exyliaPearls.listener.AntiGlitchListener;
-import net.exylia.exyliaPearls.service.AntiGlitchService;
-
-import static org.bukkit.Bukkit.getServer;
+import net.exylia.commons.v2.loader.ExyliaLoaderPlugin;
+import net.exylia.exyliaPearls.config.ConfigDefaults;
+import net.exylia.exyliaPearls.listener.ProjectileHitListener;
+import net.exylia.exyliaPearls.listener.ProjectileLaunchListener;
+import net.exylia.exyliaPearls.service.PearlTrackerService;
 
 public final class ExyliaPearls extends ExyliaLoaderPlugin {
 
-    @Override
-    protected void onPreExyliaEnable() {
-    }
+    private PearlTrackerService trackerService;
 
     @Override
     protected void onExyliaEnable() {
         DebugAPI.init(getPlugin());
-        TaskAPI.initialize(getPlugin());
+        ConfigSchemaRegistry.ensureDefaults(ConfigDefaults.class);
 
-        AntiGlitchService antiGlitchService = new AntiGlitchService();
-        getServer().getPluginManager().registerEvents(new AntiGlitchListener(antiGlitchService), getPlugin());
+        trackerService = new PearlTrackerService();
+        registerListeners();
 
-        DebugAPI.logPluginSuccess("ExyliaPearls enabled.");
+        DebugAPI.sendPluginMOTD(getPlugin());
     }
 
     @Override
     protected void onExyliaDisable() {
-        TaskAPI.shutdown();
+        if (trackerService != null) trackerService.invalidateAll();
+    }
+
+    private void registerListeners() {
+        getPlugin().getServer().getPluginManager()
+            .registerEvents(new ProjectileLaunchListener(trackerService), getPlugin());
+        getPlugin().getServer().getPluginManager()
+            .registerEvents(new ProjectileHitListener(trackerService), getPlugin());
     }
 }
