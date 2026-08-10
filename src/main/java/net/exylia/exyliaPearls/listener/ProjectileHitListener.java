@@ -1,10 +1,8 @@
 package net.exylia.exyliaPearls.listener;
 
-import net.exylia.exyliaPearls.config.ConfigDefaults;
 import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
 import net.exylia.exyliaPearls.util.BoundingBoxUtils;
-import net.exylia.exyliaPearls.util.DebugHook;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.damage.DamageSource;
@@ -35,7 +33,6 @@ public final class ProjectileHitListener implements Listener {
     @SuppressWarnings("UnstableApiUsage") // DamageSource
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onProjectileHit(ProjectileHitEvent event) {
-        if (!ConfigDefaults.EnderPearls.ENABLED) return;
         if (!(event.getEntity() instanceof EnderPearl pearl)) return;
         if (!(pearl.getShooter() instanceof Player player)) return;
 
@@ -45,10 +42,9 @@ public final class ProjectileHitListener implements Listener {
         // pre-calculated once to avoid recomputing per check
         final double halfWidth = PearlTrackerService.halfWidthOf(player);
         final double height = PearlTrackerService.heightOf(player);
-        final DebugHook debug = DebugHook.getDebugHook(ConfigDefaults.DEBUG);
 
         // the landing spot is fine, let vanilla handle it
-        if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height, debug)) {
+        if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height)) {
             return;
         }
 
@@ -59,7 +55,7 @@ public final class ProjectileHitListener implements Listener {
         tracker.invalidate(pearl.getUniqueId());
 
         // the recorded location is no longer safe, do nothing
-        if (!BoundingBoxUtils.isSafe(destination, halfWidth, height, debug)) {
+        if (!BoundingBoxUtils.isSafe(destination, halfWidth, height)) {
             return;
         }
 

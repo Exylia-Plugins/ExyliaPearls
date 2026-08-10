@@ -1,11 +1,9 @@
 package net.exylia.exyliaPearls.listener;
 
 import net.exylia.commons.v2.tasks.api.TaskAPI;
-import net.exylia.exyliaPearls.config.ConfigDefaults;
 import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
 import net.exylia.exyliaPearls.util.BoundingBoxUtils;
-import net.exylia.exyliaPearls.util.DebugHook;
 import org.bukkit.Location;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Player;
@@ -29,7 +27,6 @@ public final class ProjectileLaunchListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        if (!ConfigDefaults.EnderPearls.ENABLED) return;
         if (!(event.getEntity() instanceof EnderPearl pearl)) return;
         if (!(pearl.getShooter() instanceof Player player)) return;
 
@@ -43,17 +40,14 @@ public final class ProjectileLaunchListener implements Listener {
         final double halfWidth = PearlTrackerService.halfWidthOf(player);
         final double height = PearlTrackerService.heightOf(player);
 
-        final int interval = Math.max(ConfigDefaults.EnderPearls.CHECK_TICK_INTERVAL, 1);
-
         // scheduled on the pearl, so it dies together with the entity
         TaskAPI.atTimer(pearl, () -> {
             final Location current = pearl.getLocation();
-            final DebugHook debug = DebugHook.getDebugHook(ConfigDefaults.DEBUG);
 
             // only record the location when the player would fit there
-            if (BoundingBoxUtils.isSafe(current, halfWidth, height, debug)) {
+            if (BoundingBoxUtils.isSafe(current, halfWidth, height)) {
                 tracker.put(pearlId, new PearlData(origin, current.clone()));
             }
-        }, () -> tracker.invalidate(pearlId), interval, interval);
+        }, () -> tracker.invalidate(pearlId), 1L, 1L);
     }
 }

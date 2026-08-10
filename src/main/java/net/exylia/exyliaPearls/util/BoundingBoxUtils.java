@@ -1,9 +1,6 @@
 package net.exylia.exyliaPearls.util;
 
-import com.destroystokyo.paper.ParticleBuilder;
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.util.BoundingBox;
@@ -16,12 +13,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public final class BoundingBoxUtils {
 
-    /** Sneaking player height relative to the standing height. */
-    public static final double SNEAK_HEIGHT_RATIO = (1.5 / 1.8);
-    /** Swimming/crawling player height relative to the standing height. */
-    public static final double SWIM_HEIGHT_RATIO = (0.6 / 1.8);
-    /** One full block relative to the standing height. */
-    public static final double BLOCK_HEIGHT_RATIO = (1 / 1.8);
+    /**
+     * Height ratio applied to the player bounding box during collision checks.
+     * Matches the swimming/crawling height, which is what PearlFix uses by default.
+     */
+    public static final double HEIGHT_RATIO = (0.6 / 1.8);
 
     private BoundingBoxUtils() {
     }
@@ -32,18 +28,13 @@ public final class BoundingBoxUtils {
      * @param location  location used to perform the check.
      * @param halfWidth the width of the bounding box divided by two.
      * @param height    the height of the bounding box.
-     * @param debug     hook used for debug visualisation.
      * @return true if the checked location is safe.
      */
-    public static boolean isSafe(@NotNull Location location, double halfWidth, double height, DebugHook debug) {
+    public static boolean isSafe(@NotNull Location location, double halfWidth, double height) {
         World world = location.getWorld();
         if (world == null) return false;
 
-        final BoundingBox box = getBoundingBoxAt(location, halfWidth, height);
-        final boolean safe = !hasAnyBlockCollisions(box, world, debug);
-
-        debug.onCollisionCheck(box, world, !safe);
-        return safe;
+        return !hasAnyBlockCollisions(getBoundingBoxAt(location, halfWidth, height), world);
     }
 
     /**
@@ -51,10 +42,9 @@ public final class BoundingBoxUtils {
      *
      * @param boundingBox the box being checked for block collisions.
      * @param world       the world the blocks are retrieved from.
-     * @param debug       hook used for debug visualisation.
      * @return true if the box overlaps with any block.
      */
-    public static boolean hasAnyBlockCollisions(@NotNull BoundingBox boundingBox, @NotNull World world, DebugHook debug) {
+    public static boolean hasAnyBlockCollisions(@NotNull BoundingBox boundingBox, @NotNull World world) {
         int minX = (int) Math.floor(boundingBox.getMinX());
         int maxX = (int) Math.floor(boundingBox.getMaxX());
         int minY = (int) Math.floor(boundingBox.getMinY());
@@ -68,14 +58,7 @@ public final class BoundingBoxUtils {
                     Block block = world.getBlockAt(x, y, z);
                     if (!block.isSolid()) continue;
 
-                    final BoundingBox box = block.getBoundingBox();
-                    final boolean overlaps = box.overlaps(boundingBox);
-
-                    if (debug != DebugHook.NO_OP) {
-                        drawBoundingBox(box, world, overlaps ? Color.YELLOW : Color.WHITE);
-                    }
-
-                    if (overlaps) return true;
+                    if (block.getBoundingBox().overlaps(boundingBox)) return true;
                 }
             }
         }
@@ -100,50 +83,5 @@ public final class BoundingBoxUtils {
             location.getY() + height,
             location.getZ() + halfWidth
         );
-    }
-
-    /**
-     * Debug helper that visualises the edges of a {@link BoundingBox} using {@link Particle#DUST}.
-     *
-     * @param boundingBox the box that should be drawn.
-     * @param world       the world in which the box should be drawn.
-     * @param color       the colour of the particle.
-     */
-    public static void drawBoundingBox(BoundingBox boundingBox, World world, Color color) {
-        double minX = boundingBox.getMinX();
-        double minY = boundingBox.getMinY();
-        double minZ = boundingBox.getMinZ();
-
-        double maxX = boundingBox.getMaxX();
-        double maxY = boundingBox.getMaxY();
-        double maxZ = boundingBox.getMaxZ();
-
-        final double step = 0.2;
-
-        ParticleBuilder particle = new ParticleBuilder(Particle.DUST)
-            .color(color)
-            .count(1)
-            .extra(0);
-
-        for (double x = minX; x <= maxX; x += step) {
-            particle.location(world, x, minY, minZ).spawn();
-            particle.location(world, x, minY, maxZ).spawn();
-            particle.location(world, x, maxY, minZ).spawn();
-            particle.location(world, x, maxY, maxZ).spawn();
-        }
-
-        for (double y = minY; y <= maxY; y += step) {
-            particle.location(world, minX, y, minZ).spawn();
-            particle.location(world, maxX, y, minZ).spawn();
-            particle.location(world, minX, y, maxZ).spawn();
-            particle.location(world, maxX, y, maxZ).spawn();
-        }
-
-        for (double z = minZ; z <= maxZ; z += step) {
-            particle.location(world, minX, minY, z).spawn();
-            particle.location(world, maxX, minY, z).spawn();
-            particle.location(world, minX, maxY, z).spawn();
-            particle.location(world, maxX, maxY, z).spawn();
-        }
     }
 }

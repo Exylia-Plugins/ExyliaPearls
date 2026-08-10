@@ -1,9 +1,7 @@
 package net.exylia.exyliaPearls;
 
-import net.exylia.commons.v2.config.schema.ConfigSchemaRegistry;
 import net.exylia.commons.v2.debug.api.DebugAPI;
 import net.exylia.commons.v2.loader.ExyliaLoaderPlugin;
-import net.exylia.exyliaPearls.config.ConfigDefaults;
 import net.exylia.exyliaPearls.listener.ProjectileHitListener;
 import net.exylia.exyliaPearls.listener.ProjectileLaunchListener;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
@@ -15,7 +13,6 @@ public final class ExyliaPearls extends ExyliaLoaderPlugin {
     @Override
     protected void onExyliaEnable() {
         DebugAPI.init(getPlugin());
-        ConfigSchemaRegistry.ensureDefaults(ConfigDefaults.class);
 
         trackerService = new PearlTrackerService();
         registerListeners();
