@@ -2,6 +2,7 @@ package net.exylia.exyliaPearls.listener;
 
 import net.exylia.commons.v2.tasks.api.TaskAPI;
 import net.exylia.exyliaPearls.model.PearlData;
+import net.exylia.exyliaPearls.service.DebugService;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
 import net.exylia.exyliaPearls.util.BoundingBoxUtils;
 import org.bukkit.Location;
@@ -20,9 +21,11 @@ import java.util.UUID;
 public final class ProjectileLaunchListener implements Listener {
 
     private final PearlTrackerService tracker;
+    private final DebugService debugService;
 
-    public ProjectileLaunchListener(PearlTrackerService tracker) {
+    public ProjectileLaunchListener(PearlTrackerService tracker, DebugService debugService) {
         this.tracker = tracker;
+        this.debugService = debugService;
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -45,7 +48,7 @@ public final class ProjectileLaunchListener implements Listener {
             final Location current = pearl.getLocation();
 
             // only record the location when the player would fit there
-            if (BoundingBoxUtils.isSafe(current, halfWidth, height)) {
+            if (BoundingBoxUtils.isSafe(current, halfWidth, height, debugService.viewers())) {
                 tracker.put(pearlId, new PearlData(origin, current.clone()));
             }
         }, () -> tracker.invalidate(pearlId), 1L, 1L);

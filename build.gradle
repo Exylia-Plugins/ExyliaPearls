@@ -32,6 +32,9 @@ dependencies {
     compileOnly 'com.lukittu.loader:lukittu-common:v1.0.10-local'
     compileOnly 'com.lukittu.loader:lukittu-spigot:v1.0.10-local'
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
+    compileOnly 'io.github.revxrsal:lamp.common:4.0.0-rc.17'
+    compileOnly 'io.github.revxrsal:lamp.bukkit:4.0.0-rc.17'
+    compileOnly 'io.github.revxrsal:lamp.brigadier:4.0.0-rc.17'
 }
 
 def targetJavaVersion = 21

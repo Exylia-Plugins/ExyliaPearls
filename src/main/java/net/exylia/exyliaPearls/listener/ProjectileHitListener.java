@@ -1,6 +1,7 @@
 package net.exylia.exyliaPearls.listener;
 
 import net.exylia.exyliaPearls.model.PearlData;
+import net.exylia.exyliaPearls.service.DebugService;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
 import net.exylia.exyliaPearls.util.BoundingBoxUtils;
 import org.bukkit.Location;
@@ -15,6 +16,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
+import java.util.List;
+
 /**
  * Redirects the player to the last recorded safe location when a pearl lands somewhere
  * the player would clip into a block. Safe landings are left entirely to vanilla.
@@ -25,9 +28,11 @@ public final class ProjectileHitListener implements Listener {
     private static final double PEARL_DAMAGE = 5.0;
 
     private final PearlTrackerService tracker;
+    private final DebugService debugService;
 
-    public ProjectileHitListener(PearlTrackerService tracker) {
+    public ProjectileHitListener(PearlTrackerService tracker, DebugService debugService) {
         this.tracker = tracker;
+        this.debugService = debugService;
     }
 
     @SuppressWarnings("UnstableApiUsage") // DamageSource
@@ -42,9 +47,10 @@ public final class ProjectileHitListener implements Listener {
         // pre-calculated once to avoid recomputing per check
         final double halfWidth = PearlTrackerService.halfWidthOf(player);
         final double height = PearlTrackerService.heightOf(player);
+        final List<Player> viewers = debugService.viewers();
 
         // the landing spot is fine, let vanilla handle it
-        if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height)) {
+        if (BoundingBoxUtils.isSafe(pearl.getLocation(), halfWidth, height, viewers)) {
             return;
         }
 
@@ -55,7 +61,7 @@ public final class ProjectileHitListener implements Listener {
         tracker.invalidate(pearl.getUniqueId());
 
         // the recorded location is no longer safe, do nothing
-        if (!BoundingBoxUtils.isSafe(destination, halfWidth, height)) {
+        if (!BoundingBoxUtils.isSafe(destination, halfWidth, height, viewers)) {
             return;
         }
 
