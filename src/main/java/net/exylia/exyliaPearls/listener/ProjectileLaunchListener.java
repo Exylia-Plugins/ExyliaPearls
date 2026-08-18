@@ -1,7 +1,7 @@
 package net.exylia.exyliaPearls.listener;
 
-import net.exylia.commons.v2.tasks.api.TaskAPI;
-import net.exylia.exyliaPearls.config.ConfigDefaults;
+import net.exylia.lib.task.Tasks;
+import net.exylia.exyliaPearls.ExyliaPearls;
 import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.DebugService;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
@@ -21,10 +21,12 @@ import java.util.UUID;
  */
 public final class ProjectileLaunchListener implements Listener {
 
+    private final ExyliaPearls plugin;
     private final PearlTrackerService tracker;
     private final DebugService debugService;
 
-    public ProjectileLaunchListener(PearlTrackerService tracker, DebugService debugService) {
+    public ProjectileLaunchListener(ExyliaPearls plugin, PearlTrackerService tracker, DebugService debugService) {
+        this.plugin = plugin;
         this.tracker = tracker;
         this.debugService = debugService;
     }
@@ -42,18 +44,18 @@ public final class ProjectileLaunchListener implements Listener {
 
         // pre-calculated once to avoid recomputing every tick
         final double halfWidth = PearlTrackerService.halfWidthOf(player);
-        final double height = PearlTrackerService.heightOf(player);
+        final double height = tracker.heightOf(player);
 
-        final int interval = ConfigDefaults.checkTickInterval();
+        final int interval = plugin.settings().checkTickInterval();
 
-        // scheduled on the pearl, so it dies together with the entity
-        TaskAPI.atTimer(pearl, () -> {
+        // scheduled on the pearl, so it stops when the entity is gone
+        Tasks.of(plugin.getPlugin()).runAtEntityTimer(pearl, interval, interval, () -> {
             final Location current = pearl.getLocation();
 
             // only record the location when the player would fit there
             if (BoundingBoxUtils.isSafe(current, halfWidth, height, debugService.viewers())) {
                 tracker.put(pearlId, new PearlData(origin, current.clone()));
             }
-        }, () -> tracker.invalidate(pearlId), interval, interval);
+        });
     }
 }

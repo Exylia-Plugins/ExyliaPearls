@@ -12,10 +12,16 @@ public class CommandRegistry {
 
     public CommandRegistry(ExyliaPearls plugin, DebugService debugService) {
         this.lamp = BukkitLamp.builder(plugin.getPlugin()).build();
-        registerCommands(debugService);
+        lamp.register(new PearlsCommand(plugin, debugService));
     }
 
-    private void registerCommands(DebugService debugService) {
-        lamp.register(new PearlsCommand(debugService));
+    /**
+     * Drops the commands when the plugin stops.
+     *
+     * <p>Without this a command survives a reload pointing at a dead plugin,
+     * and the next player to run it gets an exception instead of an answer.
+     */
+    public void unregister() {
+        lamp.unregisterAllCommands();
     }
 }

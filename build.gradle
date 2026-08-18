@@ -27,8 +27,18 @@ repositories {
     maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
 }
 
+configurations {
+    exyliaLib
+    compileOnly.extendsFrom(exyliaLib)
+}
+
+configurations.configureEach {
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+}
+
 dependencies {
-    implementation("${mainPackage}:ExyliaCommons:1.0.0")
+    exyliaLib 'net.exylia:ExyliaLib:latest.release'
+    compileOnly 'com.github.ben-manes.caffeine:caffeine:3.2.4'
     compileOnly 'com.lukittu.loader:lukittu-common:v1.0.10-local'
     compileOnly 'com.lukittu.loader:lukittu-spigot:v1.0.10-local'
     compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
@@ -73,7 +83,6 @@ shadowJar {
     exclude 'de/exlll/**'
     exclude 'org/snakeyaml/**'
     exclude 'org/yaml/**'
-    relocate "${mainPackage}.commons", "${fullPackage}.shadow.commons"
 }
 
 tasks.register('cleanTarget', Delete) {
@@ -95,28 +104,12 @@ tasks.register('buildAll') {
 }
 
 /**
- * ExyliaLib is installed on the server, not compiled against.
+ * The exact ExyliaLib this jar was compiled against.
  *
- * This plugin does not call the library. It carries the installer so that any
- * server running an Exylia plugin ends up with ExyliaLib present, after which
- * the library's own updater keeps it current on its own. Installing is best
- * effort: it cannot stop this plugin from starting.
- *
- * Resolved rather than written down so the version tracks the newest release
- * without this file ever being edited again. Lazily, so tasks that do not need
- * it never pay for the lookup and a network hiccup cannot fail configuration.
+ * Resolved lazily so a task that does not need it never pays for the lookup,
+ * and derived rather than typed: the loader below must expect the same version
+ * this jar actually calls, and two places to state that go out of sync.
  */
-configurations {
-    exyliaLib
-}
-
-configurations.configureEach {
-    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
-}
-
-dependencies {
-    exyliaLib 'net.exylia:ExyliaLib:latest.release'
-}
 
 def resolvedExyliaLibVersion = provider {
     configurations.exyliaLib.resolvedConfiguration

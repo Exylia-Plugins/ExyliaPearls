@@ -46,7 +46,7 @@ public final class ProjectileHitListener implements Listener {
 
         // pre-calculated once to avoid recomputing per check
         final double halfWidth = PearlTrackerService.halfWidthOf(player);
-        final double height = PearlTrackerService.heightOf(player);
+        final double height = tracker.heightOf(player);
         final List<Player> viewers = debugService.viewers();
 
         // the landing spot is fine, let vanilla handle it
