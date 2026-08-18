@@ -10,7 +10,7 @@ plugins {
 def pluginName = 'ExyliaPearls'
 def mainPackage = 'net.exylia'
 def fullPackage = "${mainPackage}.exyliaPearls"
-def outputDirectory = "/home/coder/projects/jars"
+def outputDirectory = "/root/Java/jars"
 
 group = mainPackage
 version = '1.0.0'
@@ -67,7 +67,7 @@ processResources {
 shadowJar {
     archiveBaseName.set(pluginName)
     archiveClassifier.set('')
-    destinationDirectory = file("/home/coder/projects/jars/plugins")
+    destinationDirectory = file("/root/Java/jars/plugins")
     minimize()
     exclude 'com/lukittu/**'
     exclude 'de/exlll/**'
@@ -94,7 +94,41 @@ tasks.register('buildAll') {
     }
 }
 
+/**
+ * ExyliaLib is installed on the server, not compiled against.
+ *
+ * This plugin does not call the library. It carries the installer so that any
+ * server running an Exylia plugin ends up with ExyliaLib present, after which
+ * the library's own updater keeps it current on its own. Installing is best
+ * effort: it cannot stop this plugin from starting.
+ *
+ * Resolved rather than written down so the version tracks the newest release
+ * without this file ever being edited again. Lazily, so tasks that do not need
+ * it never pay for the lookup and a network hiccup cannot fail configuration.
+ */
+configurations {
+    exyliaLib
+}
+
+configurations.configureEach {
+    resolutionStrategy.cacheDynamicVersionsFor 0, 'seconds'
+}
+
+dependencies {
+    exyliaLib 'net.exylia:ExyliaLib:latest.release'
+}
+
+def resolvedExyliaLibVersion = provider {
+    configurations.exyliaLib.resolvedConfiguration
+            .resolvedArtifacts
+            .find { it.moduleVersion.id.name == 'ExyliaLib' }
+            ?.moduleVersion?.id?.version
+            ?: { throw new GradleException('ExyliaLib did not resolve — is it published?') }()
+}
+
 lukittu {
+    // Derived, never typed: see resolvedExyliaLibVersion above.
+    exyliaLibVersion.set(resolvedExyliaLibVersion)
     platform.set('spigot')
     mainClass.set('net.exylia.exyliaPearls.ExyliaPearls')
     productId.set('b2f7b53c-9c4e-46b3-9e29-67b8aa4e33bb')
@@ -103,7 +137,7 @@ lukittu {
     configHeader.set('Request your license in https://discord.exylia.net')
     lukittuBranch.set('spigot')
     publicKey.set('LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFtZkF5UUZSV3hRUGRDRndrSzJXTQpSeHhaWVRiWnpsTHBRNWE1dkhBdENQU3ZWaXRIRGVVN0FyeC94UW5pRUVGQW5rOVZRK2VLVGxEZWd6WjRwNU9lCjZQajdQSXNwVFBzL1pNWjNtMlFYN0ZOWkV6TnBTQjk2VjBuQ1RUWFlYdjVUNndEbWVDOEhhWG5iVXFNUUJkZmYKR0ZaUjYrajU4clhBR1I2Q2o5Vkh2MVJyRmhuWEU2cDNXemcxS1F4dG9wVElxNlMzMGtJaGZLeFN4YWh4blVjVQowcmt1N3pOWkFpMGp4RHNESE9hU1lmSmFKbllTUk04bXdvb0tRSWFNNmFWdVIzYUt2MU84aTNHcXJmZFUwcFFUCkFjTWMzZU9nb0poam0yVzR5U2Z5RFZsR3lmZkxpbTgzWHhOWDU0SzlLMEJhUm9wc3Z1R1lSNXpVYjFNT05Ea1gKOHdJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==')
-    outputLoaderJarPath.set("/home/coder/projects/jars/loaders/Exylia-Pearls-Loader.jar")
+    outputLoaderJarPath.set("/root/Java/jars/loaders/Exylia-Pearls-Loader.jar")
     resourcePaths.set([
         "src/loader/resources/plugin.yml": "plugin.yml"
     ])
