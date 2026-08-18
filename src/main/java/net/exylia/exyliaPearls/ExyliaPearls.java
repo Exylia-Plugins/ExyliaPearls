@@ -25,7 +25,6 @@ public final class ExyliaPearls extends ExyliaLoaderPlugin {
 
     @Override
     protected void onExyliaEnable() {
-        DebugAPI.init(getPlugin());
         ConfigDefaults.register();
         MessagesDefaults.register();
 
