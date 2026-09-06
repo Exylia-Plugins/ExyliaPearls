@@ -7,6 +7,7 @@ import net.exylia.lib.config.Configs;
 import net.exylia.lib.debug.Debug;
 import net.exylia.lib.reload.Reloads;
 import net.exylia.lib.text.Prefixes;
+import net.exylia.exyliaPearls.api.PearlsServiceImpl;
 import net.exylia.exyliaPearls.command.CommandRegistry;
 import net.exylia.exyliaPearls.config.PearlSettings;
 import net.exylia.exyliaPearls.listener.PlayerQuitListener;
@@ -47,6 +48,11 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
         trackerService = new PearlTrackerService(this);
         commands = new CommandRegistry(this, debugService);
         registerListeners();
+
+        // After the tracker exists and before anything can ask for the service:
+        // a plugin that enables later finds it, and one that enabled earlier is
+        // told by Bukkit when it appears.
+        PearlsServiceImpl.register(loader, this, trackerService);
 
         reloads = Reloads.of(plugin).step("configs", () -> {
             Configs.reloadAll(plugin);
