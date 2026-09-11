@@ -4,6 +4,7 @@ import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.DebugService;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
 import net.exylia.exyliaPearls.util.BoundingBoxUtils;
+import net.exylia.lib.api.pearls.event.PearlRedirectEvent;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.damage.DamageSource;
@@ -54,7 +55,15 @@ public final class ProjectileHitListener implements Listener {
             return;
         }
 
-        final Location destination = data.lastSafe().clone();
+        // the one place another plugin may refuse the rescue or move it
+        final PearlRedirectEvent redirect =
+                new PearlRedirectEvent(player, pearl, pearl.getLocation(), data.lastSafe());
+        if (!redirect.callEvent()) {
+            tracker.invalidate(pearl.getUniqueId());
+            return;
+        }
+
+        final Location destination = redirect.destination();
 
         // remove the pearl so vanilla does not teleport the player into a block
         pearl.remove();
