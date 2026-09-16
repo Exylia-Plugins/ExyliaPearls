@@ -24,7 +24,7 @@ public class PearlsCommand {
     @Subcommand("debug")
     public void debug(Player player) {
         boolean enabled = debugService.toggle(player.getUniqueId());
-        var debug = plugin.settings().messages().debug();
+        var debug = plugin.messages().debug();
 
         // from(), not of(): the prefix belongs to this plugin, and only a
         // message that says where it came from can resolve %prefix%.

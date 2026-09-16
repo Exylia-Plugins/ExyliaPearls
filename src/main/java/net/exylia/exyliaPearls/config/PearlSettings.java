@@ -14,12 +14,10 @@ import net.exylia.exyliaPearls.model.CheckMode;
 public record PearlSettings(
         @Key("ender-pearls")
         @Comment("Settings related to ender pearl behaviour.")
-        EnderPearls enderPearls,
-
-        Messages messages) {
+        EnderPearls enderPearls) {
 
     public PearlSettings() {
-        this(new EnderPearls(), new Messages());
+        this(new EnderPearls());
     }
 
     public record EnderPearls(
@@ -43,30 +41,6 @@ public record PearlSettings(
         }
     }
 
-    public record Messages(
-            @Comment("Prefixed onto this plugin's messages")
-            String prefix,
-
-            Debug debug) {
-
-        public Messages() {
-            this("{primary}&lEXYLIA PEARLS &8•&r", new Debug());
-        }
-
-        public record Debug(
-                @Comment("Sent when a staff member turns collision box rendering on")
-                String enabled,
-
-                @Comment("Sent when they turn it off")
-                String disabled) {
-
-            public Debug() {
-                this("[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.0]%prefix% {success}Debug {highlight}enabled{success}. "
-                                + "{muted}Collision boxes are now visible.",
-                        "%prefix% {muted}Debug {highlight}disabled{muted}.");
-            }
-        }
-    }
 
     /** The configured mode, resolved from its string form. */
     public CheckMode mode() {

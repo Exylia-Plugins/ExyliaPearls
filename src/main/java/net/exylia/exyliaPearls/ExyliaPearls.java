@@ -9,6 +9,7 @@ import net.exylia.lib.reload.Reloads;
 import net.exylia.lib.text.Prefixes;
 import net.exylia.exyliaPearls.api.PearlsServiceImpl;
 import net.exylia.exyliaPearls.command.CommandRegistry;
+import net.exylia.exyliaPearls.config.PearlMessages;
 import net.exylia.exyliaPearls.config.PearlSettings;
 import net.exylia.exyliaPearls.listener.PlayerQuitListener;
 import net.exylia.exyliaPearls.listener.ProjectileHitListener;
@@ -31,6 +32,7 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
     private JavaPlugin plugin;
     private Debug debug;
     private ConfigFile<PearlSettings> settings;
+    private ConfigFile<PearlMessages> messages;
     private PearlTrackerService trackerService;
     private DebugService debugService;
     private CommandRegistry commands;
@@ -42,7 +44,8 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
         debug = Debug.of(plugin);
 
         settings = Configs.define(plugin, "config", PearlSettings.class).load();
-        Prefixes.set(plugin, settings.get().messages().prefix());
+        messages = Configs.define(plugin, "messages", PearlMessages.class).load();
+        Prefixes.set(plugin, messages.get().prefix());
 
         debugService = new DebugService();
         trackerService = new PearlTrackerService(this);
@@ -57,7 +60,7 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
         reloads = Reloads.of(plugin).step("configs", () -> {
             Configs.reloadAll(plugin);
             // The prefix was read once; a reload can have changed it.
-            Prefixes.set(plugin, settings.get().messages().prefix());
+            Prefixes.set(plugin, messages.get().prefix());
         });
 
         debug.motd();
@@ -80,5 +83,6 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
     public JavaPlugin getPlugin() { return plugin; }
     public Debug debug() { return debug; }
     public PearlSettings settings() { return settings.get(); }
+    public PearlMessages messages() { return messages.get(); }
     public void reload(CommandSender sender) { reloads.run(sender); }
 }
