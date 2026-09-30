@@ -2,6 +2,8 @@ package net.exylia.exyliaPearls.config;
 
 import net.exylia.lib.config.Comment;
 import net.exylia.lib.config.Key;
+import net.exylia.lib.config.Languages;
+import net.exylia.lib.config.Migration;
 import net.exylia.exyliaPearls.model.CheckMode;
 
 /**
@@ -12,13 +14,20 @@ import net.exylia.exyliaPearls.model.CheckMode;
  * a minute.
  */
 public record PearlSettings(
+        @Comment("Language of this plugin's menus and messages. 'default' follows the language set in")
+        @Comment("ExyliaLib's config.yml; en, es or pt set this plugin alone. Each one is a folder under")
+        @Comment("lang/ you can edit; 'custom' holds the files this server had before languages existed.")
+        String language,
         @Key("ender-pearls")
         @Comment("Settings related to ender pearl behaviour.")
         EnderPearls enderPearls) {
 
     public PearlSettings() {
-        this(new EnderPearls());
+        this(Languages.DEFAULT, new EnderPearls());
     }
+
+    /** Version 1 to 2: a server that ran the plugin before languages keeps its files, in {@code lang/custom/}. */
+    public static final Migration MIGRATION_FROM_1 = Languages.ADOPT_EXISTING;
 
     public record EnderPearls(
             @Comment("Height-ratio multiplier used when checking bounding boxes.")

@@ -43,8 +43,11 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
         plugin = loader.getPlugin();
         debug = Debug.of(plugin);
 
-        settings = Configs.define(plugin, "config", PearlSettings.class).load();
-        messages = Configs.define(plugin, "messages", PearlMessages.class).load();
+        settings = Configs.define(plugin, "config", PearlSettings.class)
+                .version(2)
+                .migration(1, PearlSettings.MIGRATION_FROM_1)
+                .load();
+        messages = Configs.define(plugin, "messages", PearlMessages.class).translated().load();
         Prefixes.set(plugin, messages.get().prefix());
 
         debugService = new DebugService();
