@@ -48,8 +48,15 @@ public final class ProjectileLaunchListener implements Listener {
 
         final int interval = plugin.settings().checkTickInterval();
 
-        // scheduled on the pearl, so it stops when the entity is gone
-        Tasks.of(plugin.getPlugin()).runAtEntityTimer(pearl, interval, interval, () -> {
+        // scheduled on the pearl, so it stops when the entity is gone; a pearl held in
+        // stasis (or whose owner left) is never going to land, so stop watching it too
+        Tasks.of(plugin.getPlugin()).runAtEntityTimer(pearl, interval, interval, handle -> {
+            if (pearl.getTicksLived() > PearlTrackerService.MAX_FLIGHT_TICKS || !player.isOnline()) {
+                handle.cancel();
+                tracker.invalidate(pearlId);
+                return;
+            }
+
             final Location current = pearl.getLocation();
 
             // only record the location when the player would fit there

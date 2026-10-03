@@ -27,6 +27,9 @@ public final class PearlTrackerService {
      */
     private static final long MAX_FLIGHT_MINUTES = 2;
 
+    /** {@link #MAX_FLIGHT_MINUTES} in ticks, after which a pearl's flight task stops tracking it. */
+    public static final int MAX_FLIGHT_TICKS = (int) (MAX_FLIGHT_MINUTES * 60 * 20);
+
     private final ExyliaPearls plugin;
     private final Cache<UUID, PearlData> tracked = Caffeine.newBuilder()
             .expireAfterWrite(MAX_FLIGHT_MINUTES, TimeUnit.MINUTES)
