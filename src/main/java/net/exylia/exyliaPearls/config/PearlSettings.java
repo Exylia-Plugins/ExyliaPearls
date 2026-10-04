@@ -15,7 +15,7 @@ import net.exylia.exyliaPearls.model.CheckMode;
  */
 public record PearlSettings(
         @Comment("Language of this plugin's menus and messages. 'default' follows the language set in")
-        @Comment("ExyliaLib's config.yml; en, es or pt set this plugin alone. Each one is a folder under")
+        @Comment("ExyliaLib's config.yml; en, es, pt or fr set this plugin alone. Each one is a folder under")
         @Comment("lang/ you can edit; 'custom' holds the files this server had before languages existed.")
         String language,
         @Key("ender-pearls")
