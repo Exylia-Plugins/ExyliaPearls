@@ -140,7 +140,8 @@ lukittu {
     release {
         dependsOn(project.tasks.named('shadowJar'))
         injars(project.tasks.named('shadowJar', ShadowJar).flatMap { it.archiveFile })
-        authorization.set("c1eadb685a61714e6ecc9e9a6f8e95e912944359f2da63fb145493b855672204")
+        // Secrets live in ~/.gradle/gradle.properties, never in this repository.
+        authorization.set(providers.gradleProperty('lukittuReleaseToken').orElse(''))
         status.set("PUBLISHED")
         setAsLatest.set(true)
         branchId.set("03dc4934-0f8d-470c-ab1e-665b72cb64e0")
