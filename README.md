@@ -23,7 +23,7 @@ ExyliaLib keeps both itself and this plugin up to date from their GitHub release
 - `ender-pearls.mode`: how much of the player has to fit for a landing to count as safe. `FULL` (the whole body), `PARTIAL` (sneak height), `HALF` (one block) or `NORMAL` (recommended).
 - `ender-pearls.check-tick-interval`: how often, in ticks, a pearl in flight is checked. Keep it at 1 unless it costs you performance.
 
-Messages live in `lang/<code>/messages.yml` (English, Spanish, Portuguese, French and Russian); `language` in `config.yml` picks one, or `default` follows ExyliaLib.
+Messages live in `lang/<code>/messages.yml` (English, Spanish, Portuguese, French, Russian and Turkish); `language` in `config.yml` picks one, or `default` follows ExyliaLib.
 
 ## Commands
 
