@@ -1,7 +1,5 @@
 package net.exylia.exyliaPearls;
 
-import com.lukittu.loader.LoaderPlugin;
-import com.lukittu.loader.spigot.SpigotLukittuLoader;
 import net.exylia.lib.config.ConfigFile;
 import net.exylia.lib.config.Configs;
 import net.exylia.lib.debug.Debug;
@@ -26,8 +24,11 @@ import org.bukkit.plugin.java.JavaPlugin;
  * <p>A pearl in flight remembers the last place its thrower would have fitted.
  * If it lands somewhere they would clip into terrain, they go to that remembered
  * place instead. A safe landing is left entirely to vanilla.
+ *
+ * <p>Not the Bukkit plugin itself: {@link ExyliaPearlsPlugin} is, so it can install ExyliaLib
+ * when the server lacks it.
  */
-public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
+public final class ExyliaPearls {
 
     private JavaPlugin plugin;
     private Debug debug;
@@ -38,9 +39,8 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
     private CommandRegistry commands;
     private Reloads reloads;
 
-    @Override
-    public void start(SpigotLukittuLoader loader) {
-        plugin = loader.getPlugin();
+    public void start(JavaPlugin plugin) {
+        this.plugin = plugin;
         debug = Debug.of(plugin);
 
         settings = Configs.define(plugin, "config", PearlSettings.class)
@@ -58,7 +58,7 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
         // After the tracker exists and before anything can ask for the service:
         // a plugin that enables later finds it, and one that enabled earlier is
         // told by Bukkit when it appears.
-        PearlsServiceImpl.register(loader, this, trackerService);
+        PearlsServiceImpl.register(plugin, this, trackerService);
 
         reloads = Reloads.of(plugin).step("configs", () -> {
             Configs.reloadAll(plugin);
@@ -69,8 +69,7 @@ public final class ExyliaPearls implements LoaderPlugin<SpigotLukittuLoader> {
         debug.motd();
     }
 
-    @Override
-    public void shutdown(SpigotLukittuLoader loader) {
+    public void shutdown() {
         if (trackerService != null) trackerService.invalidateAll();
         if (debugService != null) debugService.clear();
         if (commands != null) commands.unregister();

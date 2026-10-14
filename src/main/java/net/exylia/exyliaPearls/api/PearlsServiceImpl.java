@@ -1,6 +1,5 @@
 package net.exylia.exyliaPearls.api;
 
-import com.lukittu.loader.spigot.SpigotLukittuLoader;
 import net.exylia.exyliaPearls.ExyliaPearls;
 import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
@@ -11,6 +10,7 @@ import net.exylia.lib.api.pearls.TrackedPearl;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.ServicePriority;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public final class PearlsServiceImpl implements PearlsService {
     /**
      * Publishes the service so other plugins can find it.
      *
-     * <p>Registered against the loader's {@code JavaPlugin}, which is what
+     * <p>Registered against the {@code JavaPlugin}, which is what
      * Bukkit knows about: unregistration then happens by itself when the plugin
      * disables, so a reload cannot leave a stale implementation behind.
      *
@@ -52,14 +52,14 @@ public final class PearlsServiceImpl implements PearlsService {
      * of the plugin with no accessor and publishing the API is not a reason to
      * grow one.
      *
-     * @param loader  the loader hosting this plugin
+     * @param bukkit  the Bukkit plugin hosting this one
      * @param plugin  the plugin, for its settings
      * @param tracker the tracker holding every in-flight pearl
      */
-    public static void register(@NotNull SpigotLukittuLoader loader, @NotNull ExyliaPearls plugin,
+    public static void register(@NotNull JavaPlugin bukkit, @NotNull ExyliaPearls plugin,
                                 @NotNull PearlTrackerService tracker) {
-        loader.getPlugin().getServer().getServicesManager()
-                .register(PearlsService.class, new PearlsServiceImpl(plugin, tracker), loader.getPlugin(),
+        bukkit.getServer().getServicesManager()
+                .register(PearlsService.class, new PearlsServiceImpl(plugin, tracker), bukkit,
                         ServicePriority.Normal);
     }
 
