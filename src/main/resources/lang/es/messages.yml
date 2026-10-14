@@ -1,0 +1,4 @@
+prefix: '{primary}&lEXYLIA PEARLS &8•&r'
+debug:
+  enabled: '[sound:BLOCK_NOTE_BLOCK_PLING|1.0|1.0]%prefix% {success}Depuración {highlight}activada{success}. {muted}Las cajas de colisión ahora son visibles.'
+  disabled: '%prefix% {muted}Depuración {highlight}desactivada{muted}.'
