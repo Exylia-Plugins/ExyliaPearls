@@ -5,7 +5,7 @@ Free, open-source ender pearl fix for Paper and Folia. A pearl never puts a play
 ## Requirements
 
 - Paper or Folia 1.21+, Java 21
-- [ExyliaLib](https://github.com/DiGround-s/ExyliaLib/releases). If it is missing, the plugin downloads the latest release on first start and asks for a restart.
+- [ExyliaLib](https://modrinth.com/plugin/exylialib) ([GitHub releases](https://github.com/DiGround-s/ExyliaLib/releases)). Install it first; without it the plugin stays off and says where to get it.
 
 ## Install
 
@@ -14,7 +14,7 @@ Free, open-source ender pearl fix for Paper and Folia. A pearl never puts a play
 
 ## Updates
 
-ExyliaLib keeps both itself and this plugin up to date from their GitHub releases: a new version is downloaded in the background and applied on the next restart. Turn it off or tune it under `plugin-updates` in `plugins/ExyliaLib/config.yml`; `/exylialib updates` shows what is pending.
+ExyliaLib checks this plugin's GitHub releases and announces a new version in the console and to admins. Nothing is downloaded on its own: run `/exylialib plugins` to download the update, which is applied on the next restart. Tune it under `plugin-updates` in `plugins/ExyliaLib/config.yml`.
 
 ## Configuration
 

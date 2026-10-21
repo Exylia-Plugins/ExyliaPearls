@@ -10,6 +10,6 @@ Ender pearls that never put a player inside a block. Free and open source (GPL-3
 ## ExyliaLib
 
 - Always the newest: `build.gradle` resolves the latest GitHub release (or a newer one in mavenLocal) at build time, and that version becomes plugin.yml's `exylia-lib`. There is no pinned version to bump; `-PexyliaLibVersion` pins one for a single build.
-- `ExyliaPearlsPlugin` is the Bukkit entry point and touches no ExyliaLib type; without ExyliaLib, `bootstrap/ExyliaLibInstaller` downloads the latest release (falling back to the built-against one) and the plugin waits for a restart. With it, it hands over to `ExyliaPearls`.
+- `ExyliaPearlsPlugin` is the Bukkit entry point and touches no ExyliaLib type; without ExyliaLib, `bootstrap/ExyliaLibMissing` logs where to download it (nothing is downloaded without the owner) and the plugin stays off until it is installed. With it, it hands over to `ExyliaPearls`.
 - Updates of this plugin come from ExyliaLib's `PluginUpdater` (`exylia-updates` in plugin.yml, the fixed-name `ExyliaPearls.jar` on every release).
 - The public API (`PearlsService`) lives in ExyliaLib; `api/PearlsServiceImpl` only translates to it.
