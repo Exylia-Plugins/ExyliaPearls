@@ -18,6 +18,11 @@ softdepend:
   # and stays off until it is installed.
   - ExyliaLib
 
+permissions:
+  exyliapearls.admin:
+    description: Use /pearls to reload the configuration and toggle pearl debugging.
+    default: op
+
 libraries:
   # The same list ExyliaLib declares, in the same order and the same versions.
   # The server's library loader fetches each one once and shares it, so a plugin
