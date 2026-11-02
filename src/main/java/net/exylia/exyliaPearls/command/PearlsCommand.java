@@ -1,5 +1,6 @@
 package net.exylia.exyliaPearls.command;
 
+import net.exylia.lib.config.ConfigMenus;
 import net.exylia.lib.text.Text;
 import net.exylia.exyliaPearls.ExyliaPearls;
 import net.exylia.exyliaPearls.service.DebugService;
@@ -40,5 +41,10 @@ public class PearlsCommand {
     @Subcommand("reload")
     public void reload(CommandSender sender) {
         plugin.reload(sender);
+    }
+
+    @Subcommand("settings")
+    public void settings(Player player) {
+        ConfigMenus.of(plugin.getPlugin()).permission("exyliapearls.admin").open(player);
     }
 }

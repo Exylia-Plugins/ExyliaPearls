@@ -20,7 +20,7 @@ softdepend:
 
 permissions:
   exyliapearls.admin:
-    description: Use /pearls to reload the configuration and toggle pearl debugging.
+    description: Use /pearls to reload or change the settings and toggle pearl debugging.
     default: op
 
 libraries:
