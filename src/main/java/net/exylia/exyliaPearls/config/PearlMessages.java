@@ -15,7 +15,7 @@ public record PearlMessages(
         Debug debug) {
 
     public PearlMessages() {
-        this("{primary}&lEXYLIA PEARLS &8•&r", new Debug());
+        this("{primary}&lEXYLIA PEARLS {letters_black}•<reset>", new Debug());
     }
 
     /** Sent when a staff member toggles collision box rendering. */
