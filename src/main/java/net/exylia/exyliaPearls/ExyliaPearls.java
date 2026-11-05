@@ -78,7 +78,7 @@ public final class ExyliaPearls {
     private void registerListeners() {
         PluginManager plugins = plugin.getServer().getPluginManager();
         plugins.registerEvents(new ProjectileLaunchListener(this, trackerService, debugService), plugin);
-        plugins.registerEvents(new ProjectileHitListener(trackerService, debugService), plugin);
+        plugins.registerEvents(new ProjectileHitListener(this, trackerService, debugService), plugin);
         plugins.registerEvents(new PlayerQuitListener(debugService), plugin);
     }
 

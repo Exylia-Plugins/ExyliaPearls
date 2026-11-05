@@ -1,10 +1,13 @@
 package net.exylia.exyliaPearls.listener;
 
+import net.exylia.exyliaPearls.ExyliaPearls;
 import net.exylia.exyliaPearls.model.PearlData;
 import net.exylia.exyliaPearls.service.DebugService;
 import net.exylia.exyliaPearls.service.PearlTrackerService;
 import net.exylia.exyliaPearls.util.BoundingBoxUtils;
 import net.exylia.lib.api.pearls.event.PearlRedirectEvent;
+import net.exylia.lib.task.Tasks;
+import net.exylia.lib.task.TaskScheduler;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.damage.DamageSource;
@@ -28,10 +31,12 @@ public final class ProjectileHitListener implements Listener {
     /** Vanilla damage applied after teleporting with an ender pearl. */
     private static final double PEARL_DAMAGE = 5.0;
 
+    private final ExyliaPearls plugin;
     private final PearlTrackerService tracker;
     private final DebugService debugService;
 
-    public ProjectileHitListener(PearlTrackerService tracker, DebugService debugService) {
+    public ProjectileHitListener(ExyliaPearls plugin, PearlTrackerService tracker, DebugService debugService) {
+        this.plugin = plugin;
         this.tracker = tracker;
         this.debugService = debugService;
     }
@@ -69,14 +74,25 @@ public final class ProjectileHitListener implements Listener {
         pearl.remove();
         tracker.invalidate(pearl.getUniqueId());
 
-        // the recorded location is no longer safe, do nothing
-        if (!BoundingBoxUtils.isSafe(destination, halfWidth, height, viewers)) {
-            return;
-        }
-
         destination.setYaw(player.getYaw());
         destination.setPitch(player.getPitch());
 
+        // On Folia the destination can lie in another region or world (a pearl that went
+        // through a portal still remembers the spot before it), and only that region's
+        // thread may read its blocks; the teleport then runs on the player's own thread.
+        TaskScheduler tasks = Tasks.of(plugin.getPlugin());
+        Runnable check = () -> {
+            // the recorded location is no longer safe, do nothing
+            if (!BoundingBoxUtils.isSafe(destination, halfWidth, height, viewers)) return;
+            if (tasks.isOwnedBy(player)) rescue(player, pearl, destination);
+            else tasks.runAtEntity(player, () -> rescue(player, pearl, destination));
+        };
+        if (tasks.isOwnedBy(destination)) check.run();
+        else tasks.runAtLocation(destination, check);
+    }
+
+    @SuppressWarnings("UnstableApiUsage") // DamageSource
+    private static void rescue(Player player, EnderPearl pearl, Location destination) {
         // preserves the original pearl teleport metadata
         player.teleportAsync(destination, PlayerTeleportEvent.TeleportCause.ENDER_PEARL).thenAccept(teleported -> {
             if (!teleported) return;
