@@ -1,0 +1,61 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# The landing settings an admin tunes. Everything else is in config.yml.
+
+title: "{primary}&lSETTINGS {letters_black}» {highlight}Landing"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: ENDER_PEARL
+    name: "<gradient:{primary}:{secondary_light}>Landing</gradient>"
+    lore:
+      - "{letters_black}Landing settings"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}How strictly a pearl landing is"
+      - " {letters}checked for a safe spot."
+
+  ender-pearls-mode:
+    slot: 13
+    material: SCAFFOLDING
+    name: "{letters}Landing {letters_black}▸ <gradient:{primary}:{secondary_light}>Check mode</gradient>"
+    lore:
+      - "{letters_black}Landing setting"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}A taller check is stricter: fewer"
+      - " {letters}landings count as safe, so more"
+      - " {letters}players are pulled back."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:star} {letters}Mode{letters_black}: %landing_ender_pearls_mode%"
+      - "  {letters_black}· {info}{icon:book} {letters}Default{letters_black}: %landing_ender_pearls_mode_default%"
+      - ""
+      - "%landing_ender_pearls_mode_click%"
+    actions:
+      - "exyliapearls:setting landing ender-pearls.mode"
+
+  back:
+    slot: 22
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0='
+    name: "{letters}Back {letters_black}▸ <gradient:{error}:{error_light}>Settings</gradient>"
+    lore:
+      - "{error}{icon:click} Click to go back"
+    actions:
+      - "exyliapearls:settings_hub"

@@ -1,0 +1,50 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Settings an admin tunes, one card per module. Everything else stays in the files.
+
+title: "{primary}&lPEARLS {letters_black}» {highlight}Réglages"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: COMPARATOR
+    name: "<gradient:{primary}:{secondary_light}>Réglages</gradient>"
+    lore:
+      - "{letters_black}Réglages de Pearls"
+      - ""
+      - "{primary}✎ Informations"
+      - " {letters}Les réglages utiles à modifier"
+      - " {letters}en jeu. Le reste reste dans les fichiers."
+
+  landing:
+    slot: 13
+    material: ENDER_PEARL
+    name: "{letters}Réglages {letters_black}▸ <gradient:{primary}:{secondary_light}>Atterrissage</gradient>"
+    lore:
+      - "{letters_black}Page de réglages"
+      - ""
+      - "{primary}✎ Informations"
+      - " {letters}Quelle hauteur doit avoir un point"
+      - " {letters}d’atterrissage pour être sûr."
+      - ""
+      - "{primary}✦ Statut"
+      - "  {letters_black}· {info}{icon:star} {letters}Mode{letters_black}: %landing_ender_pearls_mode%"
+      - ""
+      - "{primary}{icon:click} Cliquez pour ouvrir"
+      - "{letters_black}Chaque réglage, expliqué."
+    actions:
+      - "exyliapearls:settings_page landing"

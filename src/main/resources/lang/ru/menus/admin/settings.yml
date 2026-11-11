@@ -1,0 +1,50 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Settings an admin tunes, one card per module. Everything else stays in the files.
+
+title: "{primary}&lPEARLS {letters_black}» {highlight}Настройки"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: COMPARATOR
+    name: "<gradient:{primary}:{secondary_light}>Настройки</gradient>"
+    lore:
+      - "{letters_black}Настройки Pearls"
+      - ""
+      - "{primary}✎ Информация"
+      - " {letters}Настройки, которые стоит менять"
+      - " {letters}в игре. Остальное — в файлах."
+
+  landing:
+    slot: 13
+    material: ENDER_PEARL
+    name: "{letters}Настройки {letters_black}▸ <gradient:{primary}:{secondary_light}>Приземление</gradient>"
+    lore:
+      - "{letters_black}Страница настроек"
+      - ""
+      - "{primary}✎ Информация"
+      - " {letters}Какой высоты должно быть место"
+      - " {letters}приземления, чтобы оно было безопасным."
+      - ""
+      - "{primary}✦ Статус"
+      - "  {letters_black}· {info}{icon:star} {letters}Режим{letters_black}: %landing_ender_pearls_mode%"
+      - ""
+      - "{primary}{icon:click} Нажмите, чтобы открыть"
+      - "{letters_black}Каждая настройка с пояснением."
+    actions:
+      - "exyliapearls:settings_page landing"

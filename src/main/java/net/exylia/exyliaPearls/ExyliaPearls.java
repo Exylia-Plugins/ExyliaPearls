@@ -10,6 +10,7 @@ import net.exylia.exyliaPearls.command.CommandRegistry;
 import net.exylia.exyliaPearls.config.PearlMessages;
 import net.exylia.exyliaPearls.config.PearlSettings;
 import net.exylia.exyliaPearls.listener.PlayerQuitListener;
+import net.exylia.exyliaPearls.menu.SettingsMenus;
 import net.exylia.exyliaPearls.listener.ProjectileHitListener;
 import net.exylia.exyliaPearls.listener.ProjectileLaunchListener;
 import net.exylia.exyliaPearls.service.DebugService;
@@ -38,6 +39,7 @@ public final class ExyliaPearls {
     private DebugService debugService;
     private CommandRegistry commands;
     private Reloads reloads;
+    private SettingsMenus settingsMenus;
 
     public void start(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -55,6 +57,10 @@ public final class ExyliaPearls {
         commands = new CommandRegistry(this, debugService);
         registerListeners();
 
+        settingsMenus = new SettingsMenus(this);
+        settingsMenus.registerActions();
+        settingsMenus.load();
+
         // After the tracker exists and before anything can ask for the service:
         // a plugin that enables later finds it, and one that enabled earlier is
         // told by Bukkit when it appears.
@@ -64,7 +70,7 @@ public final class ExyliaPearls {
             Configs.reloadAll(plugin);
             // The prefix was read once; a reload can have changed it.
             Prefixes.set(plugin, messages.get().prefix());
-        });
+        }).step("menus", () -> settingsMenus.load());
 
         debug.motd();
     }
@@ -85,6 +91,8 @@ public final class ExyliaPearls {
     public JavaPlugin getPlugin() { return plugin; }
     public Debug debug() { return debug; }
     public PearlSettings settings() { return settings.get(); }
+    public ConfigFile<PearlSettings> settingsFile() { return settings; }
     public PearlMessages messages() { return messages.get(); }
+    public void openSettings(org.bukkit.entity.Player admin) { settingsMenus.openHub(admin); }
     public void reload(CommandSender sender) { reloads.run(sender); }
 }

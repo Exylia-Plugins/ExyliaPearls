@@ -1,0 +1,50 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# Settings an admin tunes, one card per module. Everything else stays in the files.
+
+title: "{primary}&lPEARLS {letters_black}» {highlight}Ayarlar"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: COMPARATOR
+    name: "<gradient:{primary}:{secondary_light}>Ayarlar</gradient>"
+    lore:
+      - "{letters_black}Pearls ayarları"
+      - ""
+      - "{primary}✎ Bilgi"
+      - " {letters}Oyun içinde değiştirmeye değer"
+      - " {letters}ayarlar. Gerisi dosyalarda kalır."
+
+  landing:
+    slot: 13
+    material: ENDER_PEARL
+    name: "{letters}Ayarlar {letters_black}▸ <gradient:{primary}:{secondary_light}>İniş</gradient>"
+    lore:
+      - "{letters_black}Ayar sayfası"
+      - ""
+      - "{primary}✎ Bilgi"
+      - " {letters}Bir iniş noktasının güvenli sayılması"
+      - " {letters}için ne kadar yüksek olması gerekir."
+      - ""
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:star} {letters}Mod{letters_black}: %landing_ender_pearls_mode%"
+      - ""
+      - "{primary}{icon:click} Açmak için tıklayın"
+      - "{letters_black}Her ayar, açıklamalı."
+    actions:
+      - "exyliapearls:settings_page landing"

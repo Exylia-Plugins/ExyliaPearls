@@ -3,6 +3,7 @@ package net.exylia.exyliaPearls.config;
 import net.exylia.lib.config.Comment;
 import net.exylia.lib.config.Key;
 import net.exylia.lib.config.Languages;
+import net.exylia.lib.config.Menu;
 import net.exylia.lib.config.Migration;
 import net.exylia.exyliaPearls.model.CheckMode;
 
@@ -37,6 +38,7 @@ public record PearlSettings(
             @Comment("HALF    - Checks one full block.")
             @Comment("NORMAL  - Recommended.")
             @Comment("Unknown values fall back to NORMAL.")
+            @Menu.Choices(value = {"FULL", "PARTIAL", "HALF", "NORMAL"}, labels = {"Full body", "Sneak height", "One block", "Swim height"})
             String mode,
 
             @Key("check-tick-interval")

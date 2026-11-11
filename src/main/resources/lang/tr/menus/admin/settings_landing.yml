@@ -1,0 +1,61 @@
+# DO NOT EDIT — REGENERATED ON EVERY STARTUP.
+#
+# The landing settings an admin tunes. Everything else is in config.yml.
+
+title: "{primary}&lAYARLAR {letters_black}» {highlight}İniş"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: ENDER_PEARL
+    name: "<gradient:{primary}:{secondary_light}>İniş</gradient>"
+    lore:
+      - "{letters_black}İniş ayarları"
+      - ""
+      - "{primary}✎ Bilgi"
+      - " {letters}Bir inci inişinin ne kadar sıkı"
+      - " {letters}kontrol edileceği."
+
+  ender-pearls-mode:
+    slot: 13
+    material: SCAFFOLDING
+    name: "{letters}İniş {letters_black}▸ <gradient:{primary}:{secondary_light}>Kontrol modu</gradient>"
+    lore:
+      - "{letters_black}İniş ayarı"
+      - ""
+      - "{primary}✎ Bilgi"
+      - " {letters}Daha yüksek kontrol daha katıdır:"
+      - " {letters}daha az iniş güvenli sayılır,"
+      - " {letters}daha çok oyuncu geri çekilir."
+      - ""
+      - "{primary}✦ Durum"
+      - "  {letters_black}· {info}{icon:star} {letters}Mod{letters_black}: %landing_ender_pearls_mode%"
+      - "  {letters_black}· {info}{icon:book} {letters}Varsayılan{letters_black}: %landing_ender_pearls_mode_default%"
+      - ""
+      - "%landing_ender_pearls_mode_click%"
+    actions:
+      - "exyliapearls:setting landing ender-pearls.mode"
+
+  back:
+    slot: 22
+    sound: "minecraft:item.bundle.remove_one|1.0|0.5"
+    material: 'basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjIzZmI2NzQyOTcxNmIyMWJjNmU4ZTdkNjY5Y2VkZGY2NWIxM2UwNzkwYTVjZTU1YjJlMDc3YjgyZDE5ZTEyNCJ9fX0='
+    name: "{letters}Geri {letters_black}▸ <gradient:{error}:{error_light}>Ayarlar</gradient>"
+    lore:
+      - "{error}{icon:click} Geri dönmek için tıklayın"
+    actions:
+      - "exyliapearls:settings_hub"

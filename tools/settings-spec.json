@@ -1,0 +1,57 @@
+{
+ "namespace": "exyliapearls",
+ "menu": "menus/admin/settings",
+ "title": "PEARLS",
+ "back": {
+  "label": "Settings",
+  "action": "exyliapearls:settings_hub"
+ },
+ "hub": {
+  "about": [
+   "The settings worth changing in",
+   "game. The rest stays in the files."
+  ]
+ },
+ "pages": [
+  {
+   "id": "landing",
+   "title": "Landing",
+   "context": "Landing",
+   "icon": "ENDER_PEARL",
+   "comment": [
+    "The landing settings an admin tunes. Everything else is in config.yml."
+   ],
+   "about": [
+    "How strictly a pearl landing is",
+    "checked for a safe spot."
+   ],
+   "hub": {
+    "about": [
+     "How tall a landing spot must be",
+     "before it counts as safe."
+    ],
+    "stats": [
+     [
+      "star",
+      "Mode",
+      "ender-pearls.mode"
+     ]
+    ]
+   },
+   "cards": [
+    [
+     "ender-pearls.mode",
+     "Check mode",
+     "SCAFFOLDING",
+     "star",
+     "Mode",
+     [
+      "A taller check is stricter: fewer",
+      "landings count as safe, so more",
+      "players are pulled back."
+     ]
+    ]
+   ]
+  }
+ ]
+}
