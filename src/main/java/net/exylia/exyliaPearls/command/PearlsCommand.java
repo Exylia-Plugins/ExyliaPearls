@@ -9,7 +9,7 @@ import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
-@Command({"exyliapearls", "pearls"})
+@Command({"pearlsadmin", "exyliapearls", "pearls"})
 @CommandPermission("exyliapearls.admin")
 public class PearlsCommand {
 

@@ -29,8 +29,8 @@ Messages live in `lang/<code>/messages.yml` (English, Spanish, Portuguese, Frenc
 
 | Command | Permission | |
 | --- | --- | --- |
-| `/pearls debug` (`/exyliapearls`) | `exyliapearls.admin` | Toggles drawing the collision boxes pearls are checked against |
-| `/pearls reload` | `exyliapearls.admin` | Reloads the config and messages |
+| `/pearlsadmin debug` (`/pearls`, `/exyliapearls`) | `exyliapearls.admin` | Toggles drawing the collision boxes pearls are checked against |
+| `/pearlsadmin reload` | `exyliapearls.admin` | Reloads the config and messages |
 
 ## API
 
