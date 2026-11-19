@@ -1,0 +1,50 @@
+# DO NOT EDIT — REGENERIERT BEI JEDEM START.
+#
+# Einstellungen, die ein Admin anpasst, eine Karte pro Modul. Alles andere bleibt in den Dateien.
+
+title: "{primary}&lPEARLS {letters_black}» {highlight}Einstellungen"
+size: 27
+type: SIMPLE
+
+open_sounds:
+  - "minecraft:block.ender_chest.open|1.0|1.4"
+click_sounds:
+  - "minecraft:block.note_block.hat|1.0|1.0"
+close_sounds:
+  - "minecraft:block.barrel.close|1.0|0.7"
+
+filler:
+  global:
+    material: GRAY_STAINED_GLASS_PANE
+    hide_tooltip: true
+
+items:
+  header:
+    slot: 4
+    material: COMPARATOR
+    name: "<gradient:{primary}:{secondary_light}>Einstellungen</gradient>"
+    lore:
+      - "{letters_black}Pearls-Einstellungen"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Die Einstellungen, die sich im Spiel"
+      - " {letters}lohnen. Der Rest bleibt in den Dateien."
+
+  landing:
+    slot: 13
+    material: ENDER_PEARL
+    name: "{letters}Einstellungen {letters_black}▸ <gradient:{primary}:{secondary_light}>Landung</gradient>"
+    lore:
+      - "{letters_black}Einstellungsseite"
+      - ""
+      - "{primary}✎ Information"
+      - " {letters}Wie hoch ein Landeplatz sein muss,"
+      - " {letters}damit er als sicher gilt."
+      - ""
+      - "{primary}✦ Status"
+      - "  {letters_black}· {info}{icon:star} {letters}Modus{letters_black}: %landing_ender_pearls_mode%"
+      - ""
+      - "{primary}{icon:click} Zum Öffnen klicken"
+      - "{letters_black}Jede Einstellung erklärt."
+    actions:
+      - "exyliapearls:settings_page landing"
